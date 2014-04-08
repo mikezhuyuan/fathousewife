@@ -1,0 +1,14 @@
+<div class="list-group events">
+  <div ng-repeat="itm in items" class="list-group-item">
+    <span class="btn glyphicon glyphicon-trash" ng-click="remove(itm)"></span>
+  	Transfer 
+  	<strong>{{itm.eventType}}</strong>
+  	<strong>{{itm.eventScheduleType}}</strong>
+  	on day of
+  	<strong>{{itm.eventScheduleType=='weekly' ? ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][itm.eventScheduleValue] : itm.eventScheduleValue}}</strong>
+  	with
+	<strong>${{itm.amount}}</strong>.
+	<em>{{itm.description}}</em>  	
+	<span ng-repeat="tag in itm.tags" class="label label-default tag">{{tag}}</span>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+<div class="text-center" style="font-size:24px">
+	<a class="btn btn-lg" ng-click="month(-1)">
+		<span class="glyphicon glyphicon-chevron-left"></span>
+	</a>
+	<span>{{date | moment:'YYYY-MM'}}</span>
+	<a class="btn btn-lg" ng-click="month(+1)" ng-if="!isCurrent()">
+		<span class="glyphicon glyphicon-chevron-right"></span>
+	</a>
+</div>
+<div>
+Monthly Balance: <strong>${{monthBalance}}</strong>
+Total Balance: <strong>${{totalBalance}}</strong>
+</div>
+<div class="list-group balance">
+  <div ng-repeat="itm in items" class="list-group-item">
+  	<span class="label label-default date">{{itm.date | moment:'MM'}}<br>{{itm.date | moment:'ddd'}}</span>
+	<span class="label label-default money">${{itm.amount}}</span>
+	<span ng-repeat="tag in itm.tags" class="label label-default tag">{{tag}}</span>
+	<span ng-if="itm.description" class="label label-default desc">{{itm.description}}</span>  	
+  </div>
+</div>

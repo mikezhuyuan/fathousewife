@@ -1,0 +1,34 @@
+body {
+	padding-top: 70px;
+}
+.list-group.balance .list-group-item {
+	overflow: auto;
+}
+.list-group.balance .list-group-item .label{
+	font-size: 100%;
+	float: left;
+	margin: 5px;
+}
+.list-group.balance .list-group-item .label.date{
+	font-size: 120%;	
+	background-color: #5cb85c;
+}
+.list-group.balance .list-group-item .label.money{
+	font-size: 200%;	
+	background-color: #428bca;
+}
+.list-group.balance .list-group-item .label.desc{
+	font-size: 100%;	
+	background-color: #5bc0de;
+	white-space: normal;
+}
+.list-group.balance .list-group-item .label.tag{
+	font-size: 75%;	
+	background-color: #999;
+}
+.list-group.create .list-group-item > *{
+	margin-top:10px;
+}
+.list-group.events .list-group-item .label.tag{
+	margin: 0 2px
+}

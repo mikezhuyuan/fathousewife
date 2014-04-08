@@ -1,0 +1,47 @@
+<div class="list-group create">
+	<div class="list-group-item">	
+		<input type="text" class="form-control" ng-model="description" placeholder="Description...">	
+		<input type="text" class="form-control" ng-model="tags" placeholder="Tags separated by space">	
+		<div class="input-group">
+			<span class="input-group-addon">$</span>
+			<input type="text" class="form-control" ng-model="amount" placeholder="00.00">
+		</div>	
+		<div class="btn-group">
+			<button type="button" class="btn btn-default" ng-click="amount=-amount">+/-</button>		
+			<button type="button" class="btn btn-default" ng-click="amount=10">$10</button>
+			<button type="button" class="btn btn-default" ng-click="amount=20">$20</button>
+			<button type="button" class="btn btn-default" ng-click="amount=50">$50</button>
+			<button type="button" class="btn btn-default" ng-click="amount=100">$100</button>
+			<button type="button" class="btn btn-default" ng-click="amount=200">$200</button>
+			<button type="button" class="btn btn-default" ng-click="amount=500">$500</button>
+		</div>
+		<div>		
+			<button type="button" class="btn btn-primary" ng-click="balance('cash')">Cash</button>
+			<button type="button" class="btn btn-primary" ng-click="balance('credit')">Credit</button>
+		</div>
+		<div>
+			<select ng-model="eventScheduleType">
+				<option value="weekly">Weekly</option>
+				<option value="monthly">Monthly</option>
+			</select>
+			<select ng-model="eventWeeklyOption" ng-show="eventScheduleType=='weekly'">
+				<option value="0">Sun</option>
+				<option value="1">Mon</option>
+				<option value="2">Tue</option>
+				<option value="3">Wed</option>
+				<option value="4">Thu</option>
+				<option value="5">Fri</option>
+				<option value="6">Sat</option>
+			</select>
+			<select ng-model="eventMonthlyOption" ng-show="eventScheduleType=='monthly'" ng-options="a for a in eventMonthlyDays">
+			</select>
+			<select ng-model="eventType">
+				<option value="credit">Credit</option>
+				<option value="cash">Cash</option>
+			</select>
+		</div>
+		<div>
+			<button type="button" class="btn btn-primary" ng-click="event()">Event</button>			
+		</div>
+	</div>
+</div>

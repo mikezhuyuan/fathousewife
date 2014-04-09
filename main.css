@@ -32,3 +32,26 @@ body {
 .list-group.events .list-group-item .label.tag{
 	margin: 0 2px
 }
+.form-signin{
+	max-width: 330px;
+	padding: 15px;
+	margin: 0 auto;
+}
+.menu{
+	list-style: none;
+}
+.menu li{
+	float: left;
+	position: relative;
+	display: block;
+}
+.menu li a{
+	color: #777;
+	padding-top: 15px;
+	padding-bottom: 15px;
+	text-shadow: 0 1px 0 rgba(255,255,255,.25);
+	position: relative;
+	display: block;
+	padding: 10px 15px;
+	text-decoration: none;
+}

@@ -259,10 +259,10 @@ CBHelper.prototype.CBLogLevel = {
 * @method setPassword
 * @param {String} pwd The md5 hash of the application password on cloudbase.io
 */
-CBHelper.prototype.setPassword = function(pwd) {
+CBHelper.prototype.setPassword = function(pwd, callback) {
     this.password = pwd;
     if (!this.deviceRegistered) {
-    	this.registerDevice();
+    	this.registerDevice(callback);
     	this.deviceRegistered = true;
     }
 };
@@ -273,7 +273,7 @@ CBHelper.prototype.setPassword = function(pwd) {
 *
 * @method registerDevice
 */
-CBHelper.prototype.registerDevice = function() {
+CBHelper.prototype.registerDevice = function(callback) {
 	params = {
 		"device_type" : this.platformHelper.deviceType,
 		"device_name" : this.platformHelper.deviceName + " - " + this.platformHelper.deviceModel,
@@ -286,7 +286,8 @@ CBHelper.prototype.registerDevice = function() {
 	var pHelper = this.platformHelper;
 	this.sendHttpRequest("register-device", url, params, null, null, function(parsedData) {
 		//pHelper.log("received session id: " + parsedData.outputData.sessionid);
-		CBSessionId = parsedData.outputData.sessionid;
+		CBSessionId = parsedData && parsedData.outputData.sessionid;
+		callback(CBSessionId);
 	});
 };
 // /Register device

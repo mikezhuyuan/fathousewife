@@ -1,12 +1,34 @@
 angular
-.module('FatHousewife', ['ngRoute'])
-.config(['$routeProvider', function($routeProvider){
+.module('FatHousewife', ['ngRoute', 'LocalStorageModule'])
+.config(function($routeProvider){
+	var buildRoute = function(controller, templateUrl){
+        return{
+            templateUrl: templateUrl,
+            controller: controller,
+            resolve: {initView: function($rootScope, cloudClientProvider, localStorageService, $location, $q){
+            	if(!cloudClientProvider.get()) {
+            		var username = localStorageService.get("username");
+            		var password = localStorageService.get("password");
+            		if(!username || !password){
+            			window.location = '#login';
+						return;
+					}
+            		return cloudClientProvider.init(username, password).then(function(){}, function(){
+            			window.location = '#login';
+            		});
+            	}				
+            }}
+        };
+    };
+
 	$routeProvider
-		.when('/cash',   {controller:'balanceController', templateUrl:'balance.html'})
-		.when('/credit', {controller:'balanceController', templateUrl:'balance.html'})
-		.when('/events', {controller:'eventsController', templateUrl:'events.html'})
-		.when('/create', {controller:'createController', templateUrl:'create.html'})
-}])
+	    .when('/login', {controller:'loginController', templateUrl: 'login.html'})
+		.when('/cash',   buildRoute('balanceController', 'balance.html'))
+		.when('/credit', buildRoute('balanceController', 'balance.html'))
+		.when('/events', buildRoute('eventsController', 'events.html'))
+		.when('/create', buildRoute('createController', 'create.html'))
+		.otherwise({redirectTo: '/'});
+})
 .filter('moment', function(moment) {
 	return function(input, format) {
 		return moment(input).format(format);
@@ -17,16 +39,6 @@ angular
 })
 .factory('_', function(){
 	return _;
-})
-.factory('credentialProvider', function(){
-	return {
-		set: function(username, password){
-
-		},
-		get: function(){
-			return {username:'', password:''};
-		}
-	};
 })
 .factory('ui', function() {
 	var counter = 0;
@@ -54,21 +66,44 @@ angular
 .factory('guid', function(){
 	return uuid.v1;
 })
-.factory('cloudClient', function(credentialProvider){
-	var appCode = 'mikezhutest';
+.factory('cloudClientProvider', function($q, ui){
 	var appUniq = '11e35bd9fe2ffac63a9c6db3011410cb';
-	var appPwd = '1234!@#$';
-	var client = new CBHelper(appCode, appUniq, new GenericHelper());
-	client.setPassword(hex_md5(appPwd));
-	return client;
+	var client;
+	return {
+		init: function(appCode, appPwd){
+			var c = new CBHelper(appCode, appUniq, new GenericHelper());
+			var deferred = $q.defer();
+			ui.block();
+			c.setPassword(hex_md5(appPwd), function(sessionId){
+				if(sessionId) {
+					client = c;
+					deferred.resolve();					
+				} else {
+					deferred.reject();
+				}
+
+				ui.unblock();
+			});
+
+			return deferred.promise;
+
+		},
+		get: function(){
+			return client;
+		}
+	};
 })
-.factory('dataProvider', function(cloudClient, $q, ui){	
+.factory('dataProvider', function(cloudClientProvider, $q, ui){	
 	return {
 		get: function(collection) {
 			var deferred = $q.defer();
 			ui.block();
-			cloudClient.searchAllDocuments(collection, function(r){
-				deferred.resolve(JSON.parse(r.outputString).data.message);
+			cloudClientProvider.get().searchAllDocuments(collection, function(r){
+				var json = JSON.parse(r.outputString);
+				if(json.data.status == "OK")
+					deferred.resolve(json.data.message);
+				else
+					deferred.reject(json.data.error);
 				ui.unblock();
 			});
 
@@ -77,8 +112,12 @@ angular
 		add: function(collection, item) {
 			var deferred = $q.defer();
 			ui.block();
-			cloudClient.insertDocument(collection, item, null, function(r) {
-				deferred.resolve(r);
+			cloudClientProvider.get().insertDocument(collection, item, null, function(r) {
+				var json = JSON.parse(r.outputString);
+				if(json.data.status == "OK")
+					deferred.resolve(json.data.message);
+				else
+					deferred.reject(json.data.error);
 				ui.unblock();				
 			});
 
@@ -87,8 +126,12 @@ angular
 		remove: function(collection, item) {
 			var deferred = $q.defer();
 			ui.block();
-			cloudClient.removeDocument({id: item.id}, collection, null, function(r) {
-				deferred.resolve(r);
+			cloudClientProvider.get().removeDocument({id: item.id}, collection, null, function(r) {
+				var json = JSON.parse(r.outputString);
+				if(json.data.status == "OK")
+					deferred.resolve(json.data.message);
+				else
+					deferred.reject(json.data.error);
 				ui.unblock();				
 			});
 
@@ -126,7 +169,7 @@ angular
 		}
 	}
 })
-.factory('BalanceService', function(cloudClient, dataProvider, $q){
+.factory('BalanceService', function(dataProvider, $q){
 	function get(all, yearMonth){
 		var items = _.chain(all)
 					 .filter(function(a){return a.date.substr(0, '0000-00'.length) === yearMonth})
@@ -161,6 +204,15 @@ angular
 			}
 		};
 	}
+})
+.controller('loginController', function($scope, $location, cloudClientProvider, localStorageService){
+	$scope.login = function(username, password) {		
+		cloudClientProvider.init(username, password).then(function(){
+			localStorageService.add('username', username);
+			localStorageService.add('password', password);
+			$location.path('/');
+		});
+	};
 })
 .controller('balanceController', function($scope, $location, moment, BalanceService){
 	var service = BalanceService();

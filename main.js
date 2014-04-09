@@ -224,7 +224,7 @@ angular
 			tags: $scope.tags && $scope.tags.split(/\s+/),
 			eventType: $scope.eventType,
 			eventScheduleType: $scope.eventScheduleType,
-			eventScheduleValue: $scope.eventScheduleType == 'weekly' ? $scope.eventWeeklyOption : $scope.eventlyOption
+			eventScheduleValue: $scope.eventScheduleType == 'weekly' ? $scope.eventWeeklyOption : $scope.eventMonthlyOption
 		}).then(reset);
 	};
 });
